@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: #1e1e1e;
+    color: white;
+}
+
+h1 {
+    text-align: center;
+}
+
+p {
+    background-color: #2d2d2d;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+.add-btn {
+    background-color: #2196f3;
+    color: white;
+}
+
+.done-btn {
+    background-color: #4caf50;
+    color: white;
+}
+
+.undone-btn {
+    background-color: #ff9800;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мої завдання</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Мої завдання</h1>
+
+    <p>📋 Всього: {{ total }}</p>
+    <p>✅ Виконано: {{ done_count }}</p>
+    <p>⏳ Залишилось: {{ left_count }}</p>
+
+    <p>Користувач: {{ login }}</p>
+    <a href="/logout">
+        <button>Вийти</button>
+    </a>
+
+    <form action="/add_task" method="POST">
+        <input type="text" name="task" placeholder="Нове завдання">
+        <button type="submit" class="add-btn">Додати</button>
+    </form>
+    <form action="/tasks" method="GET">
+        <input type="text" name="search" placeholder="Пошук">
+        <button type="submit">Знайти</button>
+    </form>
+
+    <a href="/tasks">Всі</a>
+    <a href="/tasks?filter=active">Невиконані</a>
+    <a href="/tasks?filter=done">Виконані</a>
+    
+    <hr>
+
+    {% for id, task, done, created_at in tasks %}
+    <p>
+        {% if done == 1 %}
+            ✅
+        {% else %}
+            ⬜
+        {% endif %}
+
+        {{ loop.index }}. {{ task }}
+        
+        <br>
+        <small>{{ created_at }}</small>
+
+        {% if done == 0 %}
+            <a href="/edit_task/{{ id }}">
+                <button>Редагувати</button>
+            </a>
+
+            <a href="/done_task/{{ id }}">
+                <button class="done-btn">Виконано</button>
+            </a>
+        {% else %}
+            <a href="/undone_task/{{ id }}">
+                <button class="undone-btn">Не виконано</button>
+            </a>
+        {% endif %}
+
+        <a href="/delete_task/{{ id }}"
+            onclick="return confirm('Точно видалити це завдання?')">
+             <button class="delete-btn">Видалити</button>
+        </a>
+    </p>
+    {% endfor %}
+</body>
+</html>

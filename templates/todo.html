@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ToDo список</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>МІЙ TODO СПИСОК TEST</h1>
+
+    <p>📋 Всього завдань: {{ total }}</p>
+    <p>✅ Виконано: {{ done_count }}</p>
+    <p>⏳ Залишилось: {{ left_count }}</p>
+
+    <hr>
+
+    <form action="/add" method="POST">
+        <input type="text" name="task" placeholder="Нове завдання">
+        <button type="submit">Додати</button>
+    </form>
+
+    <hr>
+
+    {% for id, task, done in tasks %}
+    <p>
+        {% if done == 1 %}
+            ✅
+        {% else %}
+            ⬜
+        {% endif %}
+
+        {{ task }}
+        {% if done == 0 %}
+            <a href="/done/{{ id }}">
+                <button>Виконано</button>
+            </a>
+        {% else %}
+            <a href="/undone/{{ id }}">
+                <button>Не виконано</button>
+            </a>
+        {% endif %}
+
+        <a href="/delete/{{ id }}">
+            <button>Видалити</button>
+        </a>
+    </p>
+    {% endfor %}
+
+</body>
+</html>

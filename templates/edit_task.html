@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редагування завдання</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Редагування завдання</h1>
+
+    <form action="/update_task/{{ id }}" method="POST">
+        <input type="text" name="task" value="{{ task }}">
+        <button type="submit">Зберегти</button>
+    </form>
+
+    <br>
+
+    <a href="/tasks">
+        <button>Назад</button>
+    </a>
+</body>
+</html>
