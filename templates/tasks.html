@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мої завдання</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
@@ -54,7 +55,8 @@ window.onload = function () {
     <hr>
 
     {% for id, task, done, created_at in tasks %}
-    <p>
+    <div class="task-card">
+
         {% if done == 1 %}
             ✅
         {% else %}
@@ -62,29 +64,28 @@ window.onload = function () {
         {% endif %}
 
         {{ loop.index }}. {{ task }}
-        
+
         <br>
         <small>{{ created_at }}</small>
 
-        {% if done == 0 %}
+        <div class="task-buttons">
+
             <a href="/edit_task/{{ id }}">
                 <button>Редагувати</button>
             </a>
 
             <a href="/done_task/{{ id }}">
-                <button class="done-btn">Виконано</button>
+                <button>Виконано</button>
             </a>
-        {% else %}
-            <a href="/undone_task/{{ id }}">
-                <button class="undone-btn">Не виконано</button>
-            </a>
-        {% endif %}
 
-        <a href="/delete_task/{{ id }}"
-            onclick="return confirm('Точно видалити це завдання?')">
-             <button class="delete-btn">Видалити</button>
-        </a>
-    </p>
+            <a href="/delete_task/{{ id }}"
+               onclick="return confirm('Точно видалити це завдання?')">
+                <button>Видалити</button>
+            </a>
+
+        </div>
+
+    </div>
     {% endfor %}
 </body>
 </html>
