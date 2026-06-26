@@ -87,3 +87,57 @@ button:hover {
         gap: 8px;
     }
 }
+.light-theme {
+    background-color: #f5f5f5;
+    color: black;
+}
+
+.light-theme .task-card {
+    background-color: white;
+    color: black;
+}
+
+.light-theme button {
+    background-color: #e0e0e0;
+    color: black;
+}
+
+.light-theme input {
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.light-theme a {
+    color: blue;
+}
+@media (max-width: 768px) {
+
+    body {
+        padding: 15px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px;
+        font-size: 18px;
+    }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 30px;
+    }
+}
