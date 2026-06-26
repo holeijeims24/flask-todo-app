@@ -3,9 +3,31 @@
 <head>
     <title>Мої завдання</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+    function toggleTheme() {
+        document.body.classList.toggle("light-theme");
+
+        if (document.body.classList.contains("light-theme")) {
+            localStorage.setItem("theme", "light");
+        } else {
+            localStorage.setItem("theme", "dark");
+        }
+    }
+
+window.onload = function () {
+    let theme = localStorage.getItem("theme");
+
+    if (theme === "light") {
+        document.body.classList.add("light-theme");
+    }
+}
+</script>
 </head>
 <body>
     <h1>Мої завдання</h1>
+    <button onclick="toggleTheme()">
+        🌙/☀️ Змінити тему
+    </button>
 
     <p>📋 Всього: {{ total }}</p>
     <p>✅ Виконано: {{ done_count }}</p>

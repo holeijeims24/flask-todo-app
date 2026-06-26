@@ -14,5 +14,22 @@ def about():
 def hello():
     name = request.form["name"]
     return f"<h1>Привіт, {name}!</h1>"
+messages = []
 
+@app.route("/messages")
+def messages_page():
+    return render_template("messages.html")
+
+@app.route("/message", methods=["POST"])
+def message():
+    text = request.form["text"]
+    messages.append(text)
+
+    result = "<h1>Повідомлення:</h1>"
+
+    for msg in messages:
+        result += f"<p>{msg}</p>"
+
+    return result
+    
 app.run(debug=True)
