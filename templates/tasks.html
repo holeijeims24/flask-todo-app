@@ -33,29 +33,101 @@ window.onload = function () {
     <p>📋 Всього: {{ total }}</p>
     <p>✅ Виконано: {{ done_count }}</p>
     <p>⏳ Залишилось: {{ left_count }}</p>
+    <p>🔥 Прострочено: {{ expired_count }}</p>
 
-    <p>Користувач: {{ login }}</p>
-    <a href="/logout">
-        <button>Вийти</button>
-    </a>
+    {% if photo %}
+        <img src="{{ url_for('static', filename='uploads/' + photo) }}"
+             width="100"
+             style="border-radius: 50%;">
+    {% endif %}
+
+    <div class="user-info">
+
+        <div class="user-text">
+            <p>Користувач: {{ login }}</p>
+            <p>@{{ username }}</p>
+        </div>
+
+        <div class="user-buttons">
+            <a href="/edit_profile">
+                <button class="btn-outline">
+                    Редагувати профіль
+                </button>
+            </a>
+
+            <a href="/logout">
+                <button class="btn-danger">
+                    Вийти
+                </button>
+            </a>
+        </div>
+
+    </div>
 
     <form action="/add_task" method="POST">
-        <input type="text" name="task" placeholder="Нове завдання">
-        <button type="submit" class="add-btn">Додати</button>
+
+        <input
+            type="text"
+            name="task"
+            placeholder="Нове завдання"
+            required
+        >
+
+        <br><br>
+
+        <p>Дедлайн (необов'язково):</p>
+
+        <input
+            type="datetime-local"
+            name="deadline"
+        >
+
+        <br><br>
+
+        <p>Пріоритет:</p>
+
+        <select name="priority">
+            <option value="Низький">🟢 Низький</option>
+            <option value="Середній" selected>🟡 Середній</option>
+            <option value="Високий">🔴 Високий</option>
+        </select>
+
+        <br><br>
+
+        <button type="submit">Додати</button>
+
     </form>
     <form action="/tasks" method="GET">
         <input type="text" name="search" placeholder="Пошук">
         <button type="submit">Знайти</button>
     </form>
 
-    <a href="/tasks">Всі</a>
-    <a href="/tasks?filter=active">Невиконані</a>
-    <a href="/tasks?filter=done">Виконані</a>
+    <div class="filters">
+        <a href="/tasks">Всі</a>
+        <a href="/tasks?filter=active">Невиконані</a>
+        <a href="/tasks?filter=done">Виконані</a>
+    </div>
     
     <hr>
+    
+    <form action="/tasks" method="GET">
 
-    {% for id, task, done, created_at in tasks %}
-    <div class="task-card">
+        <select name="sort">
+            <option value="new">🆕 Спочатку нові</option>
+            <option value="old">🕒 Спочатку старі</option>
+            <option value="deadline">📅 За дедлайном</option>
+            <option value="priority">⭐ За пріоритетом</option>
+        </select>
+
+        <button type="submit">Сортувати</button>
+
+    </form>
+    
+    {% for id, task, done, created_at, deadline, priority in tasks %}
+    <div class="task-card
+    {% if deadline and deadline < now %}
+    expired
+    {% endif %}">
 
         {% if done == 1 %}
             ✅
@@ -67,6 +139,46 @@ window.onload = function () {
 
         <br>
         <small>{{ created_at }}</small>
+        
+        {% if deadline %}
+            <br>
+            <small>📅 Дедлайн: {{ deadline }}</small>
+
+            {% if not done %}
+
+        {% if deadline < now %}
+            <br>
+            <span class="deadline-warning expired-text">
+                🔥 Прострочено!
+            </span>
+
+        {% elif deadline[:10] == today %}
+            <br>
+            <span class="deadline-warning today-text">
+                ⚠️ Дедлайн сьогодні!
+            </span>
+
+        {% elif deadline[:10] == tomorrow %}
+            <br>
+            <span class="deadline-warning tomorrow-text">
+                ⏳ Дедлайн завтра!
+            </span>
+
+        {% endif %}
+
+    {% endif %}
+        {% endif %}
+        <br>
+
+        {% if priority == "Високий" %}
+            <span class="priority high">🔴 Високий</span>
+
+        {% elif priority == "Середній" %}
+            <span class="priority medium">🟡 Середній</span>
+
+        {% else %}
+            <span class="priority low">🟢 Низький</span>
+        {% endif %}
 
         <div class="task-buttons">
 

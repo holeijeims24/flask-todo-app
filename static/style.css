@@ -23,10 +23,12 @@ input {
 }
 
 button {
-    padding: 8px 14px;
+    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    width: auto;
+    min-width: 120px;
 }
 
 button:hover {
@@ -140,4 +142,159 @@ button:hover {
         text-align: center;
         font-size: 30px;
     }
+}
+.expired {
+    border: 2px solid red;
+    background-color: #4a1a1a;
+}
+@media (max-width: 768px) {
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 8px;
+        font-size: 16px;
+    }
+
+    input {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    .task-card {
+        padding: 15px;
+    }
+
+}
+.user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.user-text p {
+    margin: 4px 0;
+}
+
+.user-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.user-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-outline {
+    background-color: #444;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+@media (max-width: 768px) {
+
+    .user-info {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .user-buttons {
+        width: 100%;
+    }
+
+    .user-buttons a {
+        flex: 1;
+    }
+
+    .user-buttons a button {
+        width: 100%;
+    }
+}
+.filters {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.filters a {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.filters a:hover {
+    opacity: 0.8;
+    transition: 0.3s;
+}
+
+.filters a:nth-child(1) {
+    background-color: #3498db; /* синій */
+}
+
+.filters a:nth-child(2) {
+    background-color: #f39c12; /* помаранчевий */
+}
+
+.filters a:nth-child(3) {
+    background-color: #2ecc71; /* зелений */
+}
+
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+    }
+}
+.priority {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 8px;
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.high {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.medium {
+    background-color: #f39c12;
+    color: white;
+}
+
+.low {
+    background-color: #2ecc71;
+    color: white;
+}
+.deadline-warning {
+    display: inline-block;
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.expired-text {
+    color: #ff4d4d;
+}
+.today-text {
+    color: #f39c12;
+}
+
+.tomorrow-text {
+    color: #3498db;
 }

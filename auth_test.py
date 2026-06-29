@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect
+from datetime import datetime, timedelta
+import os
 import sqlite3
 from datetime import datetime
 
@@ -94,53 +96,98 @@ def tasks():
         return "<h1>Спочатку увійди в систему</h1>"
     search = request.args.get("search", "")
     filter_type = request.args.get("filter", "all")
+    sort = request.args.get("sort", "new")
+    order_by = "done ASC, id DESC"
 
+    if sort == "old":
+        order_by = "done ASC, id ASC"
+
+    elif sort == "deadline":
+        order_by = "deadline ASC"
+
+    elif sort == "priority":
+        order_by = """
+            CASE
+                WHEN priority = 'Високий' THEN 1
+                WHEN priority = 'Середній' THEN 2
+                WHEN priority = 'Низький' THEN 3
+            END
+        """
     if filter_type == "active":
         cursor.execute(
-            """
-            SELECT id, task, done, created_at
+            f"""
+            SELECT id, task, done, created_at, deadline, priority
             FROM tasks
             WHERE user_login = ? AND task LIKE ? AND done = 0
-            ORDER BY id DESC
+            ORDER BY {order_by}
             """,
             (session["login"], f"%{search}%")
         )
 
     elif filter_type == "done":
         cursor.execute(
-            """
-            SELECT id, task, done, created_at
+            f"""
+            SELECT id, task, done, created_at, deadline, priority
             FROM tasks
             WHERE user_login = ? AND task LIKE ? AND done = 1
-            ORDER BY id DESC
+            ORDER BY {order_by}
             """,
             (session["login"], f"%{search}%")
         )
 
     else:
         cursor.execute(
-            """
-            SELECT id, task, done, created_at
+            f"""
+            SELECT id, task, done, created_at, deadline, priority
             FROM tasks
             WHERE user_login = ? AND task LIKE ?
-            ORDER BY done ASC, id DESC
+            ORDER BY done ASC, {order_by}
             """,
             (session["login"], f"%{search}%")
         )
 
     rows = cursor.fetchall()
 
+    now = datetime.now().strftime("%Y-%m-%dT%H:%M")
+    today = datetime.now().strftime("%Y-%m-%d")
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+
     total = len(rows)
     done_count = sum(row[2] for row in rows)
     left_count = total - done_count
+
+    expired_count = 0
+
+    for row in rows:
+        deadline = row[4]
+
+        if deadline and deadline < now and row[2] == 0:
+            expired_count += 1
+    cursor.execute(
+        "SELECT name, photo, username FROM users WHERE login = ?",
+        (session["login"],)
+    )
+
+    user = cursor.fetchone()
+
+    name = user[0] if user and user[0] else session["login"]
+    photo = user[1] if user else None
+    username = user[2] if user and user[2] else session["login"]
+    
     return render_template(
         "tasks.html",
         tasks=rows,
-        login=session["login"],
+        login=name,
+        username=username,
+        photo=photo,
         total=total,
+        today=today,
+        tomorrow=tomorrow,
         done_count=done_count,
         left_count=left_count,
-        search=search
+        search=search,
+        now=now,
+        expired_count=expired_count
     )
 @app.route("/add_task", methods=["POST"])
 def add_task():
@@ -148,13 +195,25 @@ def add_task():
         return "<h1>Спочатку увійди в систему</h1>"
 
     task = request.form["task"]
+    deadline = request.form["deadline"]
+    priority = request.form["priority"]
 
     created_at = datetime.now().strftime("%d.%m.%Y %H:%M")
 
     cursor.execute(
-        "INSERT INTO tasks (task, created_at, user_login) VALUES (?, ?, ?)",
-        (task, created_at, session["login"])
-)
+        """
+        INSERT INTO tasks
+        (task, created_at, deadline, priority, user_login)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (
+            task,
+            created_at,
+            deadline,
+            priority,
+            session["login"]
+        )
+    )
 
     conn.commit()
 
@@ -222,6 +281,64 @@ def update_task(id):
     conn.commit()
 
     return tasks()
+@app.route("/edit_profile")
+def edit_profile():
+    if "login" not in session:
+        return "<h1>Спочатку увійди в систему</h1>"
+
+    cursor.execute(
+        "SELECT name, username FROM users WHERE login = ?",
+        (session["login"],)
+    )
+
+    user = cursor.fetchone()
+
+    return render_template(
+        "edit_profile.html",
+        name=user[0] if user else "",
+        username=user[1] if user else ""
+    )
+@app.route("/save_profile", methods=["POST"])
+def save_profile():
+    if "login" not in session:
+        return "<h1>Спочатку увійди в систему</h1>"
+
+    name = request.form["name"]
+    username = request.form["username"]
+
+    cursor.execute(
+        "SELECT id FROM users WHERE username = ? AND login != ?",
+        (username, session["login"])
+    )
+
+    existing_user = cursor.fetchone()
+
+    if existing_user:
+        return "<h1>Це ім'я вже зайняте</h1>"
+
+    photo = request.files["photo"]
+    filename = None
+
+    if photo and photo.filename != "":
+        filename = session["login"] + "_" + photo.filename
+
+        photo.save(
+            os.path.join("static/uploads", filename)
+        )
+
+        cursor.execute(
+            "UPDATE users SET photo = ? WHERE login = ?",
+            (filename, session["login"])
+        )
+
+    cursor.execute(
+        "UPDATE users SET name = ?, username = ? WHERE login = ?",
+        (name, username, session["login"])
+    )
+
+    conn.commit()
+
+    return redirect("/tasks")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

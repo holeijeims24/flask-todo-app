@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редагування профілю</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Редагування профілю</h1>
+
+    <form action="/save_profile"
+        method="POST"
+        enctype="multipart/form-data">
+        <p>Ім'я, яке буде відображатися на сайті:</p>
+        
+        <input
+            type="text"
+            name="name"
+            placeholder="Ваше ім'я"
+            value="{{ name }}"
+        >
+
+        <br><br>
+        
+        <p>Унікальне ім'я користувача (не може повторюватися):</p>
+        
+        <input
+            type="text"
+            name="username"
+            placeholder="Унікальне ім'я (@username)"
+            value="{{ username }}"
+        >
+        <br><br>
+        
+        <p>Оберіть фотографію профілю:</p>
+        
+        <input type="file" name="photo">
+
+        <button type="submit">
+            Зберегти
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/tasks">
+        <button>Назад</button>
+    </a>
+
+</body>
+</html>
+
